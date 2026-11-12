@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diskret Tuzilmalar | Interaktiv Ilmiy Platforma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #4338ca;
+      --primary-hover: #3730a3;
+      --primary-light: #e0e7ff;
+      --accent: #0284c7;
+      --success: #059669;
+      --danger: #dc2626;
+      --bg-body: #f1f5f9;
+      --bg-card: #ffffff;
+      --sidebar-bg: #0f172a;
+      --sidebar-hover: #1e293b;
+      --sidebar-text: #94a3b8;
+      --border: #cbd5e1;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --radius: 10px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+
+    /* SIDEBAR */
+    #sidebar {
+      width: 360px;
+      background: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      border-right: 1px solid #1e293b;
+      box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+    }
+    .brand-header {
+      padding: 22px 20px;
+      border-bottom: 1px solid #1e293b;
+      background: #090d16;
+    }
+    .brand-header h2 { font-size: 1.05rem; font-weight: 700; color: #f8fafc; display: flex; align-items: center; gap: 8px; }
+    .brand-header p { font-size: 0.72rem; color: #64748b; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .topic-list { list-style: none; padding: 10px 8px; overflow-y: auto; flex: 1; }
+    .topic-item {
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 3px;
+      cursor: pointer;
+      font-size: 0.83rem;
+      color: var(--sidebar-text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.15s ease;
+      line-height: 1.35;
+    }
+    .topic-item:hover { background: var(--sidebar-hover); color: #f8fafc; }
+    .topic-item.active {
+      background: var(--primary);
+      color: #ffffff;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(67, 56, 202, 0.4);
+    }
+    .topic-num {
+      font-size: 0.75rem;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-weight: 600;
+      flex-shrink: 0;
+      font-family: 'Fira Code', monospace;
+    }
+
+    /* MAIN VIEW */
+    #main-content {
+      flex: 1;
+      padding: 30px 40px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: var(--primary-light);
+      color: var(--primary);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .header-info h1 { font-size: 1.6rem; font-weight: 700; color: #0f172a; }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 22px 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #1e293b;
+    }
+
+    .theory-box {
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: #334155;
+    }
+    .theory-box b { color: #0f172a; }
+    .theory-box code {
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      color: #4338ca;
+    }
+
+    /* FORMS & INPUTS */
+    .field-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+    .field-row label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      min-width: 90px;
+    }
+    input, select, textarea {
+      flex: 1;
+      padding: 9px 13px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      font-size: 0.9rem;
+      outline: none;
+      background: #ffffff;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.15);
+    }
+    .btn {
+      padding: 9px 18px;
+      border-radius: 7px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #e2e8f0; color: #1e293b; }
+    .btn-secondary:hover { background: #cbd5e1; }
+    .btn-danger { background: #fee2e2; color: var(--danger); padding: 7px 10px; }
+    .btn-danger:hover { background: #fecaca; }
+
+    .actions-bar {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* VIRTUAL FORMULA KEYPAD (8-MAVZU) */
+    .keypad-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 10px 0 14px 0;
+      background: #f8fafc;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px dashed var(--border);
+    }
+    .key-btn {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .key-btn:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    .key-btn.op { color: #4338ca; font-weight: 700; background: #f5f3ff; }
+    .key-btn.action { background: #fee2e2; color: #dc2626; border-color: #fca5a5; font-size: 0.8rem; }
+
+    /* STEPS & RESULTS */
+    .step-item {
+      padding: 12px 14px;
+      border-left: 4px solid var(--primary);
+      background: #f8fafc;
+      margin-bottom: 8px;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+    .step-title {
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .result-badge {
+      font-family: 'Fira Code', monospace;
+      padding: 14px 18px;
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #6ee7b7;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-top: 14px;
+      display: block;
+    }
+
+    /* CANVAS VISUALIZATION */
+    .canvas-container {
+      width: 100%;
+      height: 340px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-top: 16px;
+      overflow: hidden;
+      position: relative;
+    }
+    canvas { width: 100%; height: 100%; display: block; }
+
+    /* TABLES */
+    .table-container { overflow-x: auto; margin-top: 8px; }
+    table.custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.86rem;
+    }
+    table.custom-table th, table.custom-table td {
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      text-align: center;
+    }
+    table.custom-table th { background: #f1f5f9; font-weight: 600; color: #1e293b; }
+    table.custom-table tr:nth-child(even) { background: #fafafa; }
+    .val-1 { color: #059669; font-weight: bold; background: #ecfdf5; }
+    .val-0 { color: #dc2626; font-weight: bold; background: #fef2f2; }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="brand-header">
+      <h2>📘 Diskret Tuzilmalar</h2>
+      <p>Sun'iy intelekt 201-guruh  
+        <br>To'xtayeva Roziya</p>
+    </div>
+    <ul class="topic-list" id="topic-list"></ul>
+  </aside>
+
+  <!-- MAIN APP -->
+  <main id="main-content">
+    <div class="header-info">
+      <span class="badge" id="topic-badge">1-Mavzu</span>
+      <h1 id="topic-title">Mavzu yuklanmoqda...</h1>
+    </div>
+
+    <!-- 1. NAZARIY MA'LUMOT -->
+    <section class="card">
+      <h3 class="card-title">📖 Mavzuning Qisqacha Nazariyasi va Qoidalari</h3>
+      <div class="theory-box" id="topic-theory"></div>
+    </section>
+
+    <!-- 2. INTERAKTIV HISOBLAGICH -->
+    <section class="card">
+      <h3 class="card-title">⚙️ Interaktiv Hisoblash va Masala Yechish</h3>
+      <div id="dynamic-inputs"></div>
+
+      <div class="actions-bar">
+        <button class="btn btn-secondary" id="btn-add-field">+ Maydon qo'shish</button>
+        <button class="btn btn-primary" id="btn-calculate">⚡ Hisoblash va Qadamlarni Ko'rish</button>
+      </div>
+
+      <!-- 3. QADAM-BAQADAM YECHIM -->
+      <div id="solution-section" style="display: none; margin-top: 20px;">
+        <h4 style="margin-bottom: 10px; font-weight: 700; color: #1e293b;">🔍 Qadam-baqadam Yechim:</h4>
+        <div id="steps-container"></div>
+        <div id="final-result-container"></div>
+      </div>
+
+      <!-- 4. GRAFIK / VIZUALIZATSIYA -->
+      <div id="graph-section" style="display: none; margin-top: 20px;">
+        <h4 style="margin-bottom: 8px; font-weight: 700; color: #1e293b;">📊 Grafik / Vizual Tasvir:</h4>
+        <div class="canvas-container">
+          <canvas id="mainCanvas"></canvas>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const TOPICS = [
+      {
+        id: 1,
+        title: "Diskret va uzluksiz to'plamlar",
+        theory: "<b>Diskret to'plamlar:</b> Elementlari alohida ajratilgan (izolyatsiyalangan) va sanoqli bo'lgan to'plamlar (masalan: <code>N, Z</code> yoki chekli sonlar). <br><b>Uzluksiz to'plamlar:</b> Haqiqiy sonlar to'g'ri chizig'idagi oraliqlar (kontinium quvvatiga ega, masalan <code>[a, b]</code> yoki <code>(a, b)</code>).",
+        type: "topic1"
+      },
+      {
+        id: 2,
+        title: "To'plamlar ustida amallar bajarish",
+        theory: "To'plamlar nazariyasining fundamental amallari: <br>• <b>Birlashma (A ∪ B):</b> Ikkala to'plamning barcha elementlari. <br>• <b>Kesishma (A ∩ B):</b> Faqat umumiy elementlar. <br>• <b>Ayirma (A \\ B):</b> A da bor, lekin B da yo'q elementlar. <br>• <b>Simmetrik ayirma (A Δ B):</b> Faqat bittasida mavjud elementlar. <br>• <b>Dekart ko'paytmasi (A × B):</b> Barcha tartiblangan <code>(a, b)</code> juftliklar.",
+        type: "topic2"
+      },
+      {
+        id: 3,
+        title: "Tartiblangan to'plamlarga oid masalalar yechish",
+        theory: "Qisman tartiblangan to'plam (Poset) — <b>Refleksiv</b>, <b>Antisimmetrik</b> va <b>Tranzitiv</b> munosabat o'rnatilgan to'plam. Unda minimal, maksimal, eng kichik (minimum) va eng katta (maximum) elementlar hamda <b>Xasse diagrammasi</b> orqali elementlarning ierarxiyasi aniqlanadi.",
+        type: "topic3"
+      },
+      {
+        id: 4,
+        title: "Munosabatlar turlariga oid masalalar yechish",
+        theory: "To'plam ustidagi binar munosabat <code>R ⊆ A × A</code> quyidagi 4 ta asosiy xossaga tekshiriladi: <br>1. <b>Refleksivlik:</b> ∀a ∈ A uchun (a, a) ∈ R <br>2. <b>Simmetriklik:</b> (a, b) ∈ R bo'lsa, (b, a) ∈ R bo'lishi shart <br>3. <b>Antisimmetriklik:</b> (a, b) ∈ R va (b, a) ∈ R faqat a = b bo'lganda <br>4. <b>Tranzitivlik:</b> (a, b) ∈ R va (b, c) ∈ R bo'lsa, (a, c) ∈ R.",
+        type: "topic4"
+      },
+      {
+        id: 5,
+        title: "Kombinatorikaning asosiy qoidalariga oid masalalar",
+        theory: "Asosiy kombinatorik formulalar: <br>• <b>Permutatsiya:</b> <code>P(n) = n!</code> (o'rin almashtirish) <br>• <b>O'rinlashtirish:</b> <code>A(n, k) = n! / (n - k)!</code> (tartib muhim) <br>• <b>Guruhlash (Kombinatsiya):</b> <code>C(n, k) = n! / (k!(n - k)!)</code> (tartib muhim emas).",
+        type: "topic5"
+      },
+      {
+        id: 6,
+        title: "Kombinatorikani to'plamlar quvvatini aniqlashga tatbiq etish",
+        theory: "<b>Kiritish va chiqarish (Inclusion-Exclusion) prinsipi:</b> <br>2 ta to'plam uchun: <code>|A ∪ B| = |A| + |B| - |A ∩ B|</code> <br>3 ta to'plam uchun: <code>|A ∪ B ∪ C| = |A| + |B| + |C| - (|A∩B| + |A∩C| + |B∩C|) + |A∩B∩C|</code>.",
+        type: "topic6"
+      },
+      {
+        id: 7,
+        title: "Mulohazalar ustida mantiqiy amallar bajarish",
+        theory: "Mulohazalar algebrasi: <br>• <b>Konyunksiya (AND / ∧):</b> Ikkalasi ham rost (1) bo'lganda 1 <br>• <b>Dizyunksiya (OR / ∨):</b> Kamida bittasi rost bo'lganda 1 <br>• <b>Implikatsiya (A → B):</b> 1 → 0 holatidagina yolg'on (0) <br>• <b>Ekvivalentlik (A ↔ B):</b> Ikkalasi teng bo'lganda 1 <br>• <b>Inkor (NOT / ¬):</b> Qiymatni teskarisiga aylantiradi.",
+        type: "topic7"
+      },
+      {
+        id: 8,
+        title: "Mantiq funksiyalari uchun rostlik jadvallarini tuzish",
+        theory: "Foydalanuvchi ixtiyoriy harflar (o'zgaruvchilar) va amallarni kiritib o'z formulasini mustaqil tuzishi mumkin. Dastur kiritilgan ifodaning to'liq sintaksisini tahlil qilib, barcha <code>2^n</code> kombinatsiyalar uchun to'liq rostlik jadvalini quradi va uning <b>Tavtologiya</b>, <b>Ziddiyat</b> yoki <b>Bajariluvchan</b> ekanligini hisoblaydi.",
+        type: "topic8"
+      },
+      {
+        id: 9,
+        title: "Mantiqiy sxemalarda analiz va sintez masalalari",
+        theory: "Har qanday mantiqiy funksiyani <b>SDNF</b> (Mukammal dizyunktiv normal forma) yoki <b>SKNF</b> orqali ifodalash va uni <code>AND, OR, NOT</code> mantiqiy elementlari (sxemalari) orqali qurish mumkin.",
+        type: "topic9"
+      },
+      {
+        id: 10,
+        title: "Graflar nazariyasining asosiy tushunchalariga oid masalalar",
+        theory: "Graf <code>G = (V, E)</code>. Asosiy tushunchalar: <br>• <b>deg(v):</b> cho'qqiga tutashgan qirralar soni (darajasi). <br>• <b>Handshaking lemmasi:</b> Barcha cho'qqilar darajalarining yig'indisi qirralar sonining ikkilanganiga teng: <code>∑ deg(v) = 2|E|</code>.",
+        type: "topic10"
+      },
+      {
+        id: 11,
+        title: "Yo'l, zanjir va sikllarga oid masalalar yechish",
+        theory: "Graflarda harakat: <br>• <b>Yo'l:</b> Tutash qirralar ketma-ketligi. <br>• <b>Oddiy yo'l:</b> Cho'qqilari takrorlanmaydigan yo'l. <br>• <b>Sikl:</b> Boshlangan va tugagan cho'qqisi ustma-ust tushgan yopiq yo'l. <br>• <b>Eyler sikli:</b> Grafning har bir qirrasidan aynan bir marta o'tuvchi yopiq yo'l.",
+        type: "topic11"
+      },
+      {
+        id: 12,
+        title: "Planar graflarga oid masalalar yechish",
+        theory: "<b>Planar graf</b> — tekislikda qirralari o'zaro kesishmasdan chizilishi mumkin bo'lgan graf. <br><b>Eyler formulasi:</b> <code>V - E + F = 2</code> (V - cho'qqilar, E - qirralar, F - sohalar soni). Shuningdek, <code>E ≤ 3V - 6</code> sharti bajarilishi zarur.",
+        type: "topic12"
+      },
+      {
+        id: 13,
+        title: "Daraxtlarga oid masalalar yechish",
+        theory: "<b>Daraxt (Tree)</b> — siklsiz va bog'langan graf. Xossasi: <code>|E| = |V| - 1</code>. <br><b>Minimal qoplovchi daraxt (MST):</b> Grafning barcha cho'qqilarini eng kam vazn bilan tutashtiruvchi daraxt (Kruskal algoritmi).",
+        type: "topic13"
+      },
+      {
+        id: 14,
+        title: "Yo'naltirilgan graflarga oid masalalar yechish",
+        theory: "<b>Yo'naltirilgan graf (Orgraf):</b> Qirralari yo'nalishga ega. <br>Cho'qqi uchun <b>kiruvchi daraja (in-degree, deg⁻)</b> va <b>chiquvchi daraja (out-degree, deg⁺)</b> hisoblanadi. Teorema: <code>∑ deg⁻(v) = ∑ deg⁺(v) = |E|</code>.",
+        type: "topic14"
+      },
+      {
+        id: 15,
+        title: "Eng qisqa yo'l topish algoritmlarini qo'llash",
+        theory: "<b>Deykstra (Dijkstra) algoritmi:</b> Musbat vaznli graflarda berilgan manba cho'qqidan barcha qolgan cho'qqilargacha bo'lgan minimal masofani greedy usulda aniqlaydi.",
+        type: "topic15"
+      }
+    ];
+
+    let currentIdx = 7; // Standart holatda 8-mavzudan ochish (index 7)
+
+    // DOM ELEMENTS
+    const topicListEl = document.getElementById('topic-list');
+    const topicTitleEl = document.getElementById('topic-title');
+    const topicBadgeEl = document.getElementById('topic-badge');
+    const topicTheoryEl = document.getElementById('topic-theory');
+    const dynamicInputsEl = document.getElementById('dynamic-inputs');
+    const btnAddField = document.getElementById('btn-add-field');
+    const btnCalculate = document.getElementById('btn-calculate');
+    const solutionSection = document.getElementById('solution-section');
+    const stepsContainer = document.getElementById('steps-container');
+    const finalResultContainer = document.getElementById('final-result-container');
+    const graphSection = document.getElementById('graph-section');
+    const mainCanvas = document.getElementById('mainCanvas');
+
+    function initApp() {
+      renderSidebar();
+      loadTopic(currentIdx);
+    }
+
+    function renderSidebar() {
+      topicListEl.innerHTML = '';
+      TOPICS.forEach((t, i) => {
+        const li = document.createElement('li');
+        li.className = `topic-item ${i === currentIdx ? 'active' : ''}`;
+        li.innerHTML = `<span class="topic-num">${t.id}</span> <span>${t.title}</span>`;
+        li.onclick = () => loadTopic(i);
+        topicListEl.appendChild(li);
+      });
+    }
+
+    function loadTopic(index) {
+      currentIdx = index;
+      renderSidebar();
+      const topic = TOPICS[index];
+
+      topicBadgeEl.innerText = `${topic.id}-Mavzu`;
+      topicTitleEl.innerText = topic.title;
+      topicTheoryEl.innerHTML = topic.theory;
+
+      solutionSection.style.display = 'none';
+      graphSection.style.display = 'none';
+      dynamicInputsEl.innerHTML = '';
+
+      buildTopicInputs(topic);
+    }
+
+    /* -------------------------------------------------------------
+       INPUT FORMLARINI YASASH
+    ------------------------------------------------------------- */
+    function buildTopicInputs(topic) {
+      btnAddField.style.display = 'inline-flex';
+
+      switch (topic.type) {
+        case 'topic1':
+          btnAddField.style.display = 'none';
+          dynamicInputsEl.innerHTML = `
+            <div class="field-row">
+              <label>To'plam turi:</label>
+              <select id="t1-type">
+                <option value="discrete">Diskret to'plam (Sanab o'tilgan elementlar)</option>
+                <option value="interval">Uzluksiz oraliq [a, b]</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <label>Qiymatlar:</label>
+              <input type="text" id="t1-input" value="1, 3, 5, 7, 9">
+            </div>
+          `;
+          break;
+
+        case 'topic2':
+          dynamicInputsEl.innerHTML = `
+            <div class="field-row">
+              <label>Amal turi:</label>
+              <select id="t2-op">
+                <option value="union">Birlashma (A ∪ B)</option>
+                <option value="intersection">Kesishma (A ∩ B)</option>
+                <option value="diff">Ayirma (A \\ B)</option>
+                <option value="symdiff">Simmetrik ayirma (A Δ B)</option>
+                <option value="cartesian">Dekart ko'paytmasi (A × B)</option>
+              </select>
+            </div>
+            <div id="t2-sets"></div>
+          `;
+          addT2Set("To'plam A", "1, 2, 3, 4");
+          addT2Set("To'plam B", "3, 4, 5, 6");
+          break;
+
+        case 'topic3':
+          btnAddField.style.display = 'none';
+          dynamicInputsEl.innerHTML = `
+            <div class="field-row">
+              <label>Munosabat:</label>
+              <select id="t3-rel">
+                <option value="divides">Bo'linish munosabati (a | b)</option>
+                <option value="leq">Kichik yoki teng (a ≤ b)</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <label>Elementlar:</label>
+              <input type="text" id="t3-elements" value="1, 2, 3, 4, 6, 12">
+            </div>
+          `;
+          break;
+
+        case 'topic4':
+          dynamicInputsEl.innerHTML = `
+            <div class="field-row">
+              <label>Asosiy to'plam A:</label>
+              <input type="text" id="t4-base" value="1, 2, 3">
+            </div>
+            <p style="font-size:0.83rem; color:var(--text-muted); margin: 6px 0;">Binar juftliklar (a, b):</p>
+            <div id="t4-pairs"></div>
+          `;
+          addT4Pair("1", "1");
+          addT4Pair("2", "2");
+          addT4Pair("3", "3");
+          addT4Pair("1", "2");
+          addT4Pair("2", "1");
+          break;
+
+        case 'topic5':
+          btnAddField.style.display = 'none';
+          dynamicInputsEl.innerHTML = `
+            <div class="field-row">
+              <label>Formula turi:</label>
+              <select id="t5-type">
+                <option value="perm">Permutatsiya P(n) = n!</option>
+                <option value="arr">O'rinlashtirish A(n, k) = n! / (n-k)!</option>
+                <option value="comb">Guruhlash C(n, k) = n! / (k!(n-k)!)</option>
+              </select>
+            </div>
+            <div class="field-row"><label>n parametri:</label><input type="number" id="t5-n" value="6" min="0"></div>
+            <div class="field-row" id="t5-k-row"><label>k parametri:</label><input type="number" id="t5-k" value="3" min="0"></div>
+          `;
+          break;
+
+        case 'topic6':
+          btnAddField.style.display = 'none';
+          dynamicInputsEl.innerHTML = `
+            <div class="field-row">
+              <label>Rejim:</label>
+              <select id="t6-mode">
+                <option value="2">2 ta to'plam (|A|, |B|)</option>
+                <option value="3">3 ta to'plam (|A|, |B|, |C|)</option>
+              </select>
+            </div>
+            <div class="field-row"><label>|A| quvvati:</label><input type="number" id="t6-a" value="20"></div>
+            <div class="field-row"><label>|B| quvvati:</label><input type="number" id="t6-b" value="25"></div>
+            <div class="field-row" id="t6-c-row" style="display:none;"><label>|C| quvvati:</label><input type="number" id="t6-c" value="30"></div>
+            <div class="field-row"><label>|A ∩ B|:</label><input type="number" id="t6-ab" value="8"></div>
+            <div id="t6-extra-3" style="display:none;">
+              <div class="field-row"><label>|A ∩ C|:</label><input type="number" id="t6-ac" value="6"></div>
+              <div class="field-row"><label>|B ∩ C|:</label><input type="number" id="t6-bc" value="7"></div>
+              <div class="field-row"><label>|A ∩ B ∩ C|:</label><input type="number" id="t6-abc" value="3"></div>
+            </div>
+          `;
+          document.getElementById('t6-mode').onchange = (e) => {
+            const is3 = e.target.value === '3';
+            document.getElementById('t6-c-row').style.display = is3 ? 'flex' : 'none';
+            document.getElementById('t6-extra-3').style.display = is3 ? 'block' : 'none';
+          };
+          break;
+
+        case 'topic7':
+          btnAddField.style.display = 'none';
+          dynamicInputsEl.innerHTML = `
+            <div class="field-row">
+              <label>Mulohaza A:</label>
+              <select id="t7-a"><option value="1">1 (Rost / True)</option><option value="0">0 (Yolg'on / False)</option></select>
+            </div>
+            <div class="field-row">
+              <label>Mulohaza B:</label>
+              <select id="t7-b"><option value="1">1 (Rost / True)</option><option value="0">0 (Yolg'on / False)</option></select>
+            </div>
+            <div class="field-row">
+              <label>Amal:</label>
+              <select id="t7-op">
+                <option value="and">Konyunksiya (A ∧ B)</option>
+                <option value="or">Dizyunksiya (A ∨ B)</option>
+                <option value="impl">Implikatsiya (A → B)</option>
+                <option value="equiv">Ekvivalentlik (A ↔ B)</option>
+                <option value="xor">XOR (A ⊕ B)</option>
+                <option value="notA">Inkor ¬A</option>
+              </select>
+            </div>
+          `;
+          break;
+
+        /* ========================================================
+           8-MAVZU: FOYDALANUVCHI O'ZI FORMULA TUZADIGAN MODUL
+        ======================================================== */
+        case 'topic8':
+          btnAddField.style.display = 'none';
+          dynamicInputsEl.innerHTML = `
+            <div class="field-row">
+              <label>Mantiqiy ifoda:</label>
+              <input type="text" id="t8-custom-expr" value="(A ∧ B) → (C ∨ ¬A)" style="font-family:'Fira Code', monospace; font-size:1.05rem; font-weight:600; color:#4338ca;">
+            </div>
+
+            <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Klaviaturadan yoki quyidagi tugmalar yordamida harflar va amallarni bosing:</p>
+            
+            <div class="keypad-container">
+              <!-- Harflar / O'zgaruvchilar -->
+              <button class="key-btn" onclick="insertSymbol('A')">A</button>
+              <button class="key-btn" onclick="insertSymbol('B')">B</button>
+              <button class="key-btn" onclick="insertSymbol('C')">C</button>
+              <button class="key-btn" onclick="insertSymbol('D')">D</button>
+              <button class="key-btn" onclick="insertSymbol('P')">P</button>
+              <button class="key-btn" onclick="insertSymbol('Q')">Q</button>
+              <button class="key-btn" onclick="insertSymbol('X')">X</button>
+              <button class="key-btn" onclick="insertSymbol('Y')">Y</button>
+              
+              <!-- Mantiqiy Amallar -->
+              <button class="key-btn op" title="Inkor (NOT)" onclick="insertSymbol('¬')">¬ (NOT)</button>
+              <button class="key-btn op" title="Konyunksiya (AND)" onclick="insertSymbol(' ∧ ')">∧ (AND)</button>
+              <button class="key-btn op" title="Dizyunksiya (OR)" onclick="insertSymbol(' ∨ ')">∨ (OR)</button>
+              <button class="key-btn op" title="Implikatsiya (IF...THEN)" onclick="insertSymbol(' → ')">→ (IMPL)</button>
+              <button class="key-btn op" title="Ekvivalentlik" onclick="insertSymbol(' ↔ ')">↔ (EQ)</button>
+              <button class="key-btn op" title="XOR" onclick="insertSymbol(' ⊕ ')">⊕ (XOR)</button>
+              <button class="key-btn op" onclick="insertSymbol('(')">(</button>
+              <button class="key-btn op" onclick="insertSymbol(')')">)</button>
+
+              <!-- Tozalash & O'chirish -->
+              <button class="key-btn action" onclick="backspaceFormula()">⌫ O'chirish</button>
+              <button class="key-btn action" onclick="clearFormula()">Tozalash</button>
+            </div>
+
+            <div class="field-row" style="margin-top:6px;">
+              <label>Tayyor namunalar:</label>
+              <select id="t8-presets" onchange="applyPreset(this.value)" style="font-size:0.85rem;">
+                <option value="">-- Sinab ko'rish uchun namunani tanlang --</option>
+                <option value="(A ∧ B) → (C ∨ ¬A)">(A ∧ B) → (C ∨ ¬A)</option>
+                <option value="(A → B) ∧ (B → C) → (A → C)">(A → B) ∧ (B → C) → (A → C) [Tranzitivlik tavtologiyasi]</option>
+                <option value="¬(A ∨ B) ↔ (¬A ∧ ¬B)">¬(A ∨ B) ↔ (¬A ∧ ¬B) [De Morgan qonuni]</option>
+                <option value="(A ⊕ B) ↔ ((A ∧ ¬B) ∨ (¬A ∧ B))">(A ⊕ B) ↔ ((A ∧ ¬B) ∨ (¬A ∧ B)) [XOR ekvivalenti]</option>
+                <option value="A ∧ ¬A">A ∧ ¬A [Ziddiyat namunasi]</option>
+              </select>
+            </div>
+          `;
+          break;
+
+        case 'topic9':
+          btnAddField.style.display = 'none';
+          dynamicInputsEl.innerHTML = `
+            <div class="field-row">
+              <label>O'zgaruvchilar:</label>
+              <select id="t9-vars"><option value="2">2 ta o'zgaruvchi (A, B)</option><option value="3">3 ta o'zgaruvchi (A, B, C)</option></select>
+            </div>
+            <div class="field-row">
+              <label>Chiqish vektori F:</label>
+              <input type="text" id="t9-vec" value="1, 0, 1, 1">
+            </div>
+          `;
+          break;
+
+        case 'topic10':
+        case 'topic11':
+        case 'topic12':
+        case 'topic13':
+        case 'topic14':
+        case 'topic15':
+          renderGraphInputTemplate(topic.type);
+          break;
+      }
+    }
+
+    // Formulaga belgi kiritish yordamchi funksiyalari
+    window.insertSymbol = function(sym) {
+      const input = document.getElementById('t8-custom-expr');
+      if (!input) return;
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      const val = input.value;
+      input.value = val.substring(0, start) + sym + val.substring(end);
+      input.focus();
+      input.selectionStart = input.selectionEnd = start + sym.length;
+    };
+
+    window.backspaceFormula = function() {
+      const input = document.getElementById('t8-custom-expr');
+      if (!input) return;
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      const val = input.value;
+      if (start === end) {
+        if (start > 0) {
+          input.value = val.substring(0, start - 1) + val.substring(end);
+          input.selectionStart = input.selectionEnd = start - 1;
+        }
+      } else {
+        input.value = val.substring(0, start) + val.substring(end);
+        input.selectionStart = input.selectionEnd = start;
+      }
+      input.focus();
+    };
+
+    window.clearFormula = function() {
+      const input = document.getElementById('t8-custom-expr');
+      if (input) { input.value = ''; input.focus(); }
+    };
+
+    window.applyPreset = function(val) {
+      if (!val) return;
+      const input = document.getElementById('t8-custom-expr');
+      if (input) { input.value = val; input.focus(); }
+    };
+
+    function renderGraphInputTemplate(type) {
+      let extraHtml = '';
+      if (type === 'topic11') {
+        extraHtml = `<div class="field-row"><label>Tekshirish yo'li:</label><input type="text" id="t11-path" value="A, B, D, C, A"></div>`;
+      } else if (type === 'topic15') {
+        extraHtml = `<div class="field-row"><label>Boshlang'ich cho'qqi:</label><input type="text" id="t15-start" value="A" style="max-width: 100px; text-transform:uppercase;"></div>`;
+      }
+
+      dynamicInputsEl.innerHTML = `
+        ${extraHtml}
+        <p style="font-size: 0.83rem; color: var(--text-muted); margin-bottom: 8px;">Qirralar ro'yxati (U, V, Vazn):</p>
+        <div id="graph-edges"></div>
+      `;
+
+      if (type === 'topic10' || type === 'topic12') {
+        addGraphEdge("A", "B", 1); addGraphEdge("B", "C", 1); addGraphEdge("C", "D", 1); addGraphEdge("D", "A", 1); addGraphEdge("A", "C", 1);
+      } else if (type === 'topic11') {
+        addGraphEdge("A", "B", 1); addGraphEdge("B", "D", 1); addGraphEdge("D", "C", 1); addGraphEdge("C", "A", 1); addGraphEdge("B", "C", 1);
+      } else if (type === 'topic13' || type === 'topic15') {
+        addGraphEdge("A", "B", 4); addGraphEdge("A", "C", 2); addGraphEdge("B", "C", 1); addGraphEdge("B", "D", 5); addGraphEdge("C", "D", 8); addGraphEdge("C", "E", 10); addGraphEdge("D", "E", 2);
+      } else if (type === 'topic14') {
+        addGraphEdge("A", "B", 1); addGraphEdge("A", "C", 1); addGraphEdge("B", "C", 1); addGraphEdge("C", "D", 1); addGraphEdge("D", "B", 1);
+      }
+    }
+
+    // Dynamic field additions
+    btnAddField.onclick = () => {
+      const topic = TOPICS[currentIdx];
+      if (topic.type === 'topic2') {
+        const container = document.getElementById('t2-sets');
+        const letter = String.fromCharCode(65 + container.children.length);
+        addT2Set(`To'plam ${letter}`, "2, 4, 6");
+      } else if (topic.type === 'topic4') {
+        addT4Pair("1", "3");
+      } else if (['topic10', 'topic11', 'topic12', 'topic13', 'topic14', 'topic15'].includes(topic.type)) {
+        addGraphEdge("A", "E", 3);
+      }
+    };
+
+    function addT2Set(label, defaultVal) {
+      const container = document.getElementById('t2-sets');
+      if (!container) return;
+      const row = document.createElement('div');
+      row.className = 'field-row';
+      row.innerHTML = `
+        <label>${label}:</label>
+        <input type="text" class="t2-input" value="${defaultVal}">
+        ${container.children.length >= 2 ? `<button class="btn btn-danger" onclick="this.parentElement.remove()">✕</button>` : ''}
+      `;
+      container.appendChild(row);
+    }
+
+    function addT4Pair(u, v) {
+      const container = document.getElementById('t4-pairs');
+      if (!container) return;
+      const row = document.createElement('div');
+      row.className = 'field-row';
+      row.innerHTML = `
+        <span>(</span>
+        <input type="text" class="t4-u" value="${u}" style="max-width:60px; text-align:center;">
+        <span>,</span>
+        <input type="text" class="t4-v" value="${v}" style="max-width:60px; text-align:center;">
+        <span>)</span>
+        <button class="btn btn-danger" onclick="this.parentElement.remove()">✕</button>
+      `;
+      container.appendChild(row);
+    }
+
+    function addGraphEdge(u, v, w) {
+      const container = document.getElementById('graph-edges');
+      if (!container) return;
+      const row = document.createElement('div');
+      row.className = 'field-row';
+      row.innerHTML = `
+        <input type="text" class="ge-u" value="${u}" style="max-width:70px; text-align:center; text-transform:uppercase;">
+        <span>→</span>
+        <input type="text" class="ge-v" value="${v}" style="max-width:70px; text-align:center; text-transform:uppercase;">
+        <label style="min-width:45px; text-align:right;">Vazn:</label>
+        <input type="number" class="ge-w" value="${w}" style="max-width:80px;">
+        <button class="btn btn-danger" onclick="this.parentElement.remove()">✕</button>
+      `;
+      container.appendChild(row);
+    }
+
+    /* -------------------------------------------------------------
+       HISOBLASH VA STEP-BY-STEP YECHIMLAR
+    ------------------------------------------------------------- */
+    btnCalculate.onclick = () => {
+      const topic = TOPICS[currentIdx];
+      solutionSection.style.display = 'block';
+      graphSection.style.display = 'none';
+      stepsContainer.innerHTML = '';
+      finalResultContainer.innerHTML = '';
+
+      switch (topic.type) {
+        case 'topic1': solveTopic1(); break;
+        case 'topic2': solveTopic2(); break;
+        case 'topic3': solveTopic3(); break;
+        case 'topic4': solveTopic4(); break;
+        case 'topic5': solveTopic5(); break;
+        case 'topic6': solveTopic6(); break;
+        case 'topic7': solveTopic7(); break;
+        case 'topic8': solveTopic8Custom(); break; // Yangilangan custom formula parser
+        case 'topic9': solveTopic9(); break;
+        case 'topic10': solveTopic10(); break;
+        case 'topic11': solveTopic11(); break;
+        case 'topic12': solveTopic12(); break;
+        case 'topic13': solveTopic13(); break;
+        case 'topic14': solveTopic14(); break;
+        case 'topic15': solveTopic15(); break;
+      }
+
+      solutionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    function addStep(title, descHtml) {
+      const div = document.createElement('div');
+      div.className = 'step-item';
+      div.innerHTML = `<div class="step-title">${title}</div><div>${descHtml}</div>`;
+      stepsContainer.appendChild(div);
+    }
+
+    function setFinalResult(html) {
+      finalResultContainer.innerHTML = `<div class="result-badge">${html}</div>`;
+    }
+
+    /* =============================================================
+       8-MAVZU: MATEMATIK PARSER VA ROSTLIK JADVALI GENERATORI
+    ============================================================= */
+    function solveTopic8Custom() {
+      const rawExpr = document.getElementById('t8-custom-expr').value.trim();
+      if (!rawExpr) {
+        setFinalResult("Iltimos, mantiqiy formula kiriting!");
+        return;
+      }
+
+      addStep("1-Qadam: Kiritilgan formula qabul qilindi", `Formula: <code>${rawExpr}</code>`);
+
+      // Normalizatsiya: barcha operatorlarni yagona standart belgilarga keltirish
+      let expr = rawExpr
+        .replace(/<->|<=>|==/g, '↔')
+        .replace(/->|=>/g, '→')
+        .replace(/&&|\*|&/g, '∧')
+        .replace(/\|\||\+|\|/g, '∨')
+        .replace(/!|~|not/gi, '¬')
+        .replace(/\^|xor/gi, '⊕');
+
+      // Formula ichidan barcha unikal harflarni (o'zgaruvchilarni) ajratib olish
+      const varsSet = new Set(expr.match(/[A-Za-z]/g));
+      const vars = Array.from(varsSet).map(v => v.toUpperCase()).sort();
+
+      if (vars.length === 0) {
+        setFinalResult("Xatolik: Formulada hech qanday harf (o'zgaruvchi) topilmadi!");
+        return;
+      }
+      if (vars.length > 6) {
+        setFinalResult("Ogohlantirish: O'zgaruvchilar soni 6 tadan oshmasligi kerak (aks holda 2⁶ = 64 tadan ko'p qator brauzerni qotirishi mumkin).");
+        return;
+      }
+
+      addStep("2-Qadam: Aniqlangan o'zgaruvchilar", `O'zgaruvchilar soni: <b>${vars.length}</b> ta: { ${vars.join(', ')} }. Satrlar soni: 2^${vars.length} = <b>${Math.pow(2, vars.length)}</b> ta.`);
+
+      // Shunting-Yard orqali RPN (Reverse Polish Notation) ga o'tkazish
+      const rpn = parseToRPN(expr);
+      if (rpn.error) {
+        setFinalResult(`Sintaksis xatosi: ${rpn.error}`);
+        return;
+      }
+
+      const totalRows = Math.pow(2, vars.length);
+      let tableHtml = `
+        <div class="table-container">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th style="width: 45px;">№</th>
+                ${vars.map(v => `<th>${v}</th>`).join('')}
+                <th>Natija: ${expr}</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      let allTrue = true;
+      let allFalse = true;
+
+      for (let i = 0; i < totalRows; i++) {
+        const bin = i.toString(2).padStart(vars.length, '0');
+        const env = {};
+        vars.forEach((v, idx) => {
+          env[v] = parseInt(bin[idx]);
+        });
+
+        const rowResult = evalRPN(rpn.tokens, env);
+        if (rowResult === 1) allFalse = false;
+        if (rowResult === 0) allTrue = false;
+
+        tableHtml += `
+          <tr>
+            <td style="color:#64748b; font-size:0.75rem;">${i + 1}</td>
+            ${vars.map(v => `<td>${env[v]}</td>`).join('')}
+            <td class="${rowResult === 1 ? 'val-1' : 'val-0'}">${rowResult}</td>
+          </tr>
+        `;
+      }
+      tableHtml += `</tbody></table></div>`;
+
+      addStep("3-Qadam: To'liq generatsiya qilingan Rostlik Jadvali", tableHtml);
+
+      let xulosa = "";
+      if (allTrue) xulosa = "🟢 TAVTOLOGIYA (Har doim rost / Identically True)";
+      else if (allFalse) xulosa = "🔴 ZIDDIYAT (Har doim yolg'on / Identically False)";
+      else xulosa = "🟡 BAJARILUVCHAN (Neytral / Contingency — rost ham, yolg'on ham bo'ladi)";
+
+      setFinalResult(`Xulosa: ${xulosa}`);
+    }
+
+    // Mantiqiy Shunting-Yard algoritmi
+    function parseToRPN(expr) {
+      const precedence = { '¬': 5, '∧': 4, '⊕': 3, '∨': 2, '→': 1, '↔': 0 };
+      const isRightAssoc = { '¬': true, '→': true };
+
+      // Tokenlarga bo'lish
+      const tokens = [];
+      let i = 0;
+      while (i < expr.length) {
+        const c = expr[i];
+        if (/\s/.test(c)) { i++; continue; }
+        if (/[A-Za-z]/.test(c)) { tokens.push({ type: 'VAR', val: c.toUpperCase() }); i++; }
+        else if ('¬∧∨→↔⊕()'.includes(c)) { tokens.push({ type: 'OP', val: c }); i++; }
+        else { return { error: `Noma'lum belgi: "${c}"` }; }
+      }
+
+      const output = [];
+      const opStack = [];
+
+      for (let t of tokens) {
+        if (t.type === 'VAR') {
+          output.push(t);
+        } else if (t.val === '(') {
+          opStack.push(t);
+        } else if (t.val === ')') {
+          while (opStack.length && opStack[opStack.length - 1].val !== '(') {
+            output.push(opStack.pop());
+          }
+          if (!opStack.length) return { error: "Qavslar muvozanati buzilgan: ')' ortiqcha!" };
+          opStack.pop(); // '(' ni chiqarib tashlash
+        } else {
+          // Operator
+          const op1 = t.val;
+          while (opStack.length) {
+            const op2 = opStack[opStack.length - 1].val;
+            if (op2 === '(') break;
+            const p1 = precedence[op1], p2 = precedence[op2];
+            if ((!isRightAssoc[op1] && p1 <= p2) || (isRightAssoc[op1] && p1 < p2)) {
+              output.push(opStack.pop());
+            } else break;
+          }
+          opStack.push(t);
+        }
+      }
+
+      while (opStack.length) {
+        const op = opStack.pop();
+        if (op.val === '(' || op.val === ')') return { error: "Qavslar to'liq yopilmagan!" };
+        output.push(op);
+      }
+
+      return { tokens: output };
+    }
+
+    // RPN ni berilgan o'zgaruvchilar qiymati bo'yicha hisoblash
+    function evalRPN(rpnTokens, env) {
+      const stack = [];
+      for (let t of rpnTokens) {
+        if (t.type === 'VAR') {
+          stack.push(env[t.val]);
+        } else if (t.val === '¬') {
+          const a = stack.pop() || 0;
+          stack.push(a === 1 ? 0 : 1);
+        } else {
+          const b = stack.pop() !== undefined ? stack.pop() : 0;
+          const a = stack.pop() !== undefined ? stack.pop() : 0;
+          let r = 0;
+          switch (t.val) {
+            case '∧': r = (a & b); break;
+            case '∨': r = (a | b); break;
+            case '→': r = (!a || b) ? 1 : 0; break;
+            case '↔': r = (a === b) ? 1 : 0; break;
+            case '⊕': r = (a ^ b); break;
+          }
+          stack.push(r);
+        }
+      }
+      return stack.length ? stack[0] : 0;
+    }
+
+    /* =============================================================
+       QOLGAN 14 TA MAVZU ALGORITMLARI
+    ============================================================= */
+    function solveTopic1() {
+      const type = document.getElementById('t1-type').value;
+      const raw = document.getElementById('t1-input').value.trim();
+
+      if (type === 'discrete') {
+        const arr = Array.from(new Set(raw.split(',').map(s => s.trim()).filter(Boolean)));
+        addStep("1-Qadam: Kiritilgan to'plam elementlari", `{ ${arr.join(', ')} }`);
+        addStep("2-Qadam: Quvvati", `Diskret to'plam quvvati chekli: |A| = <b>${arr.length}</b>`);
+        setFinalResult(`Turi: Diskret to'plam | Quvvati: |A| = ${arr.length}`);
+        graphSection.style.display = 'block';
+        drawNumberLine(arr.map(Number).filter(n => !isNaN(n)), null);
+      } else {
+        const parts = raw.split(',').map(s => parseFloat(s.trim()));
+        const a = Math.min(parts[0] || 0, parts[1] || 1);
+        const b = Math.max(parts[0] || 0, parts[1] || 1);
+        addStep("1-Qadam: Oraliq", `Oraliq: [${a}, ${b}]`);
+        addStep("2-Qadam: Uzluksizlik", `Haqiqiy sonlar to'g'ri chizig'idagi har qanday [${a}, ${b}] oraliq kontinuum quvvatga (2^ℵ₀) ega.`);
+        setFinalResult(`Turi: Uzluksiz to'plam | Quvvati: 𝔠 (Kontinuum)`);
+        graphSection.style.display = 'block';
+        drawNumberLine([], [a, b]);
+      }
+    }
+
+    function drawNumberLine(points, interval) {
+      const ctx = mainCanvas.getContext('2d');
+      setupCanvasDpi(mainCanvas);
+      const W = mainCanvas.width, H = mainCanvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      const y = H / 2;
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(50, y);
+      ctx.lineTo(W - 50, y);
+      ctx.stroke();
+
+      if (interval) {
+        const [a, b] = interval;
+        ctx.strokeStyle = '#4338ca';
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.moveTo(120, y);
+        ctx.lineTo(W - 150, y);
+        ctx.stroke();
+        drawPoint(ctx, 120, y, `${a}`, '#4338ca');
+        drawPoint(ctx, W - 150, y, `${b}`, '#4338ca');
+      } else if (points.length) {
+        const min = Math.min(...points), max = Math.max(...points);
+        const span = max === min ? 1 : (max - min);
+        points.forEach(p => {
+          const x = 100 + ((p - min) / span) * (W - 250);
+          drawPoint(ctx, x, y, `${p}`, '#059669');
+        });
+      }
+    }
+
+    function drawPoint(ctx, x, y, label, color) {
+      ctx.beginPath();
+      ctx.arc(x, y, 6, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 12px Inter';
+      ctx.textAlign = 'center';
+      ctx.fillText(label, x, y - 12);
+    }
+
+    function solveTopic2() {
+      const op = document.getElementById('t2-op').value;
+      const inputs = Array.from(document.querySelectorAll('.t2-input'));
+      const sets = inputs.map(i => Array.from(new Set(i.value.split(',').map(s => s.trim()).filter(Boolean))));
+
+      if (op === 'cartesian') {
+        let pairs = [];
+        for (let a of sets[0]) {
+          for (let b of sets[1] || []) pairs.push(`(${a}, ${b})`);
+        }
+        addStep("Dekart ko'paytmasi", `Jami juftliklar: ${pairs.length} ta.`);
+        setFinalResult(`A × B = { ${pairs.join(', ')} }`);
+        return;
+      }
+
+      let res = sets[0];
+      for (let i = 1; i < sets.length; i++) {
+        const next = sets[i];
+        if (op === 'union') res = Array.from(new Set([...res, ...next]));
+        else if (op === 'intersection') res = res.filter(x => next.includes(x));
+        else if (op === 'diff') res = res.filter(x => !next.includes(x));
+        else if (op === 'symdiff') {
+          res = [...res.filter(x => !next.includes(x)), ...next.filter(x => !res.includes(x))];
+        }
+      }
+      setFinalResult(`Natija: { ${res.join(', ')} } (Quvvati: ${res.length})`);
+    }
+
+    function solveTopic3() {
+      const rel = document.getElementById('t3-rel').value;
+      const elements = Array.from(new Set(document.getElementById('t3-elements').value.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n)))).sort((a,b) => a - b);
+
+      const edges = [];
+      for (let i = 0; i < elements.length; i++) {
+        for (let j = 0; j < elements.length; j++) {
+          if (i !== j) {
+            const a = elements[i], b = elements[j];
+            if (rel === 'divides' && b % a === 0) edges.push({ u: a, v: b });
+            if (rel === 'leq' && a < b) edges.push({ u: a, v: b });
+          }
+        }
+      }
+
+      const hasseEdges = edges.filter(e1 => !edges.some(e2 => e2.u === e1.u && edges.some(e3 => e3.u === e2.v && e3.v === e1.v)));
+      const hasOutgoing = new Set(hasseEdges.map(e => e.u));
+      const hasIncoming = new Set(hasseEdges.map(e => e.v));
+      const minimal = elements.filter(x => !hasIncoming.has(x));
+      const maximal = elements.filter(x => !hasOutgoing.has(x));
+
+      addStep("Xasse diagrammasi qirralari", hasseEdges.map(e => `${e.u} ≺ ${e.v}`).join(', ') || "Mavjud emas");
+      setFinalResult(`Minimal: { ${minimal.join(', ')} } | Maksimal: { ${maximal.join(', ')} }`);
+      graphSection.style.display = 'block';
+      drawHasseCanvas(elements, hasseEdges);
+    }
+
+    function drawHasseCanvas(nodes, edges) {
+      const ctx = mainCanvas.getContext('2d');
+      setupCanvasDpi(mainCanvas);
+      const W = mainCanvas.width, H = mainCanvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      const coords = {};
+      nodes.forEach((node, idx) => {
+        const x = 80 + (idx % 3) * ((W - 160) / 2);
+        const y = H - 60 - Math.floor(idx / 2) * 60;
+        coords[node] = { x, y: Math.max(50, y) };
+      });
+
+      ctx.strokeStyle = '#4338ca';
+      ctx.lineWidth = 2;
+      edges.forEach(e => {
+        const p1 = coords[e.u], p2 = coords[e.v];
+        if (p1 && p2) {
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
+      });
+
+      nodes.forEach(node => {
+        const { x, y } = coords[node];
+        ctx.beginPath();
+        ctx.arc(x, y, 18, 0, Math.PI * 2);
+        ctx.fillStyle = '#e0e7ff';
+        ctx.fill();
+        ctx.strokeStyle = '#4338ca';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 12px Inter';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(node, x, y);
+      });
+    }
+
+    function solveTopic4() {
+      const baseA = Array.from(new Set(document.getElementById('t4-base').value.split(',').map(s => s.trim()).filter(Boolean)));
+      const uIns = document.querySelectorAll('.t4-u');
+      const vIns = document.querySelectorAll('.t4-v');
+      const pairs = [];
+      for (let i = 0; i < uIns.length; i++) pairs.push({ u: uIns[i].value.trim(), v: vIns[i].value.trim() });
+
+      let isReflexive = baseA.every(a => pairs.some(p => p.u === a && p.v === a));
+      let isSymmetric = pairs.every(p => pairs.some(p2 => p2.u === p.v && p2.v === p.u));
+      let isAntisymmetric = pairs.every(p => !(p.u !== p.v && pairs.some(p2 => p2.u === p.v && p2.v === p.u)));
+
+      let isTransitive = true;
+      for (let p1 of pairs) {
+        for (let p2 of pairs) {
+          if (p1.v === p2.u && !pairs.some(p3 => p3.u === p1.u && p3.v === p2.v)) {
+            isTransitive = false; break;
+          }
+        }
+      }
+
+      addStep("Xossalar", `Refleksiv: ${isReflexive} | Simmetrik: ${isSymmetric} | Antisimmetrik: ${isAntisymmetric} | Tranzitiv: ${isTransitive}`);
+      let res = isReflexive && isSymmetric && isTransitive ? "Ekvivalentlik munosabati" : (isReflexive && isAntisymmetric && isTransitive ? "Qisman tartib munosabati" : "Oddiy binar munosabat");
+      setFinalResult(res);
+    }
+
+    function solveTopic5() {
+      const type = document.getElementById('t5-type').value;
+      const n = parseInt(document.getElementById('t5-n').value) || 0;
+      const k = parseInt(document.getElementById('t5-k').value) || 0;
+      function fact(num) { let r = 1n; for (let i = 2n; i <= BigInt(num); i++) r *= i; return r; }
+
+      if (type === 'perm') setFinalResult(`P(${n}) = ${fact(n)}`);
+      else if (type === 'arr') setFinalResult(`A(${n}, ${k}) = ${fact(n) / fact(n - k)}`);
+      else setFinalResult(`C(${n}, ${k}) = ${fact(n) / (fact(k) * fact(n - k))}`);
+    }
+
+    function solveTopic6() {
+      const mode = document.getElementById('t6-mode').value;
+      const a = parseInt(document.getElementById('t6-a').value) || 0;
+      const b = parseInt(document.getElementById('t6-b').value) || 0;
+      const ab = parseInt(document.getElementById('t6-ab').value) || 0;
+
+      if (mode === '2') {
+        setFinalResult(`|A ∪ B| = ${a} + ${b} - ${ab} = <b>${a + b - ab}</b>`);
+      } else {
+        const c = parseInt(document.getElementById('t6-c').value) || 0;
+        const ac = parseInt(document.getElementById('t6-ac').value) || 0;
+        const bc = parseInt(document.getElementById('t6-bc').value) || 0;
+        const abc = parseInt(document.getElementById('t6-abc').value) || 0;
+        setFinalResult(`|A ∪ B ∪ C| = <b>${a + b + c - (ab + ac + bc) + abc}</b>`);
+      }
+    }
+
+    function solveTopic7() {
+      const a = parseInt(document.getElementById('t7-a').value);
+      const b = parseInt(document.getElementById('t7-b').value);
+      const op = document.getElementById('t7-op').value;
+      let res = 0;
+      if (op === 'and') res = a & b;
+      else if (op === 'or') res = a | b;
+      else if (op === 'impl') res = (!a || b) ? 1 : 0;
+      else if (op === 'equiv') res = (a === b) ? 1 : 0;
+      else if (op === 'xor') res = a ^ b;
+      else if (op === 'notA') res = a ? 0 : 1;
+      setFinalResult(`Natija: <b>${res}</b> (${res ? "Rost / True" : "Yolg'on / False"})`);
+    }
+
+    function solveTopic9() {
+      const numVars = parseInt(document.getElementById('t9-vars').value);
+      const raw = document.getElementById('t9-vec').value.split(',').map(s => parseInt(s.trim()));
+      const minterms = [];
+      const totalRows = Math.pow(2, numVars);
+
+      for (let i = 0; i < totalRows; i++) {
+        if (raw[i] === 1) {
+          let bin = i.toString(2).padStart(numVars, '0');
+          let term = [];
+          for (let v = 0; v < numVars; v++) {
+            term.push(bin[v] === '1' ? String.fromCharCode(65 + v) : `¬${String.fromCharCode(65 + v)}`);
+          }
+          minterms.push(`(${term.join(' ∧ ')})`);
+        }
+      }
+      setFinalResult(`SDNF: ${minterms.join(' ∨ ') || "0"}`);
+    }
+
+    function solveTopic10() {
+      const { nodes, edges } = parseGraphInputs();
+      setFinalResult(`Cho'qqilar: ${nodes.length} ta | Qirralar: ${edges.length} ta | ∑ deg(v) = 2|E| = ${edges.length * 2}`);
+      graphSection.style.display = 'block';
+      drawStandardGraph(nodes, edges);
+    }
+
+    function solveTopic11() {
+      const { nodes, edges } = parseGraphInputs();
+      const pathNodes = document.getElementById('t11-path').value.split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
+      const isCycle = pathNodes[0] === pathNodes[pathNodes.length - 1] && pathNodes.length > 2;
+      setFinalResult(isCycle ? "Grafda Sikl (Cycle) topildi" : "Oddiy yo'l (Path)");
+      graphSection.style.display = 'block';
+      drawStandardGraph(nodes, edges, pathNodes);
+    }
+
+    function solveTopic12() {
+      const { nodes, edges } = parseGraphInputs();
+      const F = 2 - nodes.length + edges.length;
+      setFinalResult(`Eyler formulasi: V - E + F = 2 => Sohalar F = ${F}`);
+      graphSection.style.display = 'block';
+      drawStandardGraph(nodes, edges);
+    }
+
+    function solveTopic13() {
+      const { nodes, edges } = parseGraphInputs();
+      const sorted = [...edges].sort((a,b) => a.w - b.w);
+      const parent = {};
+      nodes.forEach(n => parent[n] = n);
+      function find(i) { return parent[i] === i ? i : (parent[i] = find(parent[i])); }
+      function union(i, j) {
+        const rootI = find(i), rootJ = find(j);
+        if (rootI !== rootJ) { parent[rootI] = rootJ; return true; }
+        return false;
+      }
+      const mst = [];
+      let totalW = 0;
+      sorted.forEach(e => {
+        if (union(e.u, e.v)) { mst.push(e); totalW += e.w; }
+      });
+      setFinalResult(`Minimal qoplovchi daraxt (MST) umumiy vazni: <b>${totalW}</b>`);
+      graphSection.style.display = 'block';
+      drawStandardGraph(nodes, edges, null, mst);
+    }
+
+    function solveTopic14() {
+      const { nodes, edges } = parseGraphInputs();
+      setFinalResult(`Orgraf: ∑ deg⁻ = ∑ deg⁺ = |E| = ${edges.length}`);
+      graphSection.style.display = 'block';
+      drawStandardGraph(nodes, edges, null, null, true);
+    }
+
+    function solveTopic15() {
+      const { nodes, edges } = parseGraphInputs();
+      const start = (document.getElementById('t15-start').value || 'A').trim().toUpperCase();
+      const dist = {}, visited = new Set();
+      nodes.forEach(n => dist[n] = Infinity);
+      dist[start] = 0;
+
+      for (let i = 0; i < nodes.length; i++) {
+        let u = null;
+        nodes.forEach(n => {
+          if (!visited.has(n) && (u === null || dist[n] < dist[u])) u = n;
+        });
+        if (dist[u] === Infinity) break;
+        visited.add(u);
+
+        edges.forEach(e => {
+          let neighbor = null;
+          if (e.u === u) neighbor = e.v;
+          else if (e.v === u) neighbor = e.u;
+          if (neighbor && !visited.has(neighbor) && dist[u] + e.w < dist[neighbor]) {
+            dist[neighbor] = dist[u] + e.w;
+          }
+        });
+      }
+      let summary = nodes.map(n => `${start} → ${n}: <b>${dist[n]}</b>`).join(' | ');
+      setFinalResult(`Eng qisqa masofalar: ${summary}`);
+      graphSection.style.display = 'block';
+      drawStandardGraph(nodes, edges);
+    }
+
+    function parseGraphInputs() {
+      const uIns = document.querySelectorAll('.ge-u');
+      const vIns = document.querySelectorAll('.ge-v');
+      const wIns = document.querySelectorAll('.ge-w');
+      const nodesSet = new Set(), edges = [];
+      for (let i = 0; i < uIns.length; i++) {
+        const u = uIns[i].value.trim().toUpperCase(), v = vIns[i].value.trim().toUpperCase(), w = parseFloat(wIns[i].value) || 1;
+        if (u && v) { nodesSet.add(u); nodesSet.add(v); edges.push({ u, v, w }); }
+      }
+      return { nodes: Array.from(nodesSet), edges };
+    }
+
+    function setupCanvasDpi(canvas) {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = 340;
+    }
+
+    function drawStandardGraph(nodes, edges, highlightedPath = null, highlightedEdges = null, isDirected = false) {
+      const ctx = mainCanvas.getContext('2d');
+      setupCanvasDpi(mainCanvas);
+      const W = mainCanvas.width, H = mainCanvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      const centerX = W / 2, centerY = H / 2;
+      const radius = Math.min(centerX, centerY) - 45;
+      const coords = {};
+      nodes.forEach((n, idx) => {
+        const angle = (2 * Math.PI * idx) / nodes.length - Math.PI / 2;
+        coords[n] = { x: centerX + radius * Math.cos(angle), y: centerY + radius * Math.sin(angle) };
+      });
+
+      edges.forEach(e => {
+        const p1 = coords[e.u], p2 = coords[e.v];
+        if (!p1 || !p2) return;
+        let isHigh = highlightedEdges ? highlightedEdges.some(he => (he.u === e.u && he.v === e.v) || (!isDirected && he.u === e.v && he.v === e.u)) : false;
+        ctx.strokeStyle = isHigh ? '#059669' : '#cbd5e1';
+        ctx.lineWidth = isHigh ? 4 : 2;
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+
+        const midX = (p1.x + p2.x) / 2, midY = (p1.y + p2.y) / 2;
+        ctx.fillStyle = isHigh ? '#059669' : '#64748b';
+        ctx.font = 'bold 11px Fira Code';
+        ctx.fillText(e.w, midX + 6, midY - 6);
+      });
+
+      if (highlightedPath) {
+        for (let i = 0; i < highlightedPath.length - 1; i++) {
+          const p1 = coords[highlightedPath[i]], p2 = coords[highlightedPath[i+1]];
+          if (p1 && p2) {
+            ctx.strokeStyle = '#dc2626';
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      nodes.forEach(n => {
+        const { x, y } = coords[n];
+        ctx.beginPath();
+        ctx.arc(x, y, 18, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.strokeStyle = '#4338ca';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 12px Inter';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(n, x, y);
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
